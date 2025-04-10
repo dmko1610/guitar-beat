@@ -1,4 +1,4 @@
-package dmko.guitarbeat
+package dmitrykovalev.guitarbeat
 
 interface Platform {
     val name: String
