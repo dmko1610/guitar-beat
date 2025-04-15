@@ -9,13 +9,14 @@ import {
 } from "react-native";
 import { breathingStore, Phase } from "./stores/breathingStore";
 import { useEffect, useRef } from "react";
+import * as Haptics from 'expo-haptics'
 
 const { width } = Dimensions.get("window");
 
 const BreathingAnimation = observer(() => {
   const scale = useRef(new Animated.Value(0.5)).current;
 
-  const pulseScale = useRef(new Animated.Value(3)).current;
+  const pulseScale = useRef(new Animated.Value(1.5)).current;
   const pulseOpacity = useRef(new Animated.Value(0.4)).current;
 
   const isStopping = useRef(false);
@@ -83,6 +84,8 @@ const BreathingAnimation = observer(() => {
     if (!breathingStore.isRunning && !isStopping.current) {
       isStopping.current = true;
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+
       Animated.timing(scale, {
         toValue: 0.5,
         duration: 500,
@@ -95,6 +98,7 @@ const BreathingAnimation = observer(() => {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     animatePhase(breathingStore.phase);
   }, [breathingStore.phase, breathingStore.isRunning]);
 
