@@ -1,73 +1,59 @@
-import { Button, StyleSheet, Text, View } from "react-native";
 import { observer } from "mobx-react-lite";
-import { metronomeStore } from "./stores/metronomeStore";
-import Slider from "@react-native-community/slider";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { breathingStore } from "./stores/breathingStore";
+import BreathingAnimation from "./BreathingAnimation";
 
-const MetronomeScreen = observer(() => {
+const MainScreen = observer(() => {
+  const handlePress = () => {
+    if (breathingStore.isRunning) {
+      breathingStore.stop();
+    } else {
+      breathingStore.start();
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.bpmLabel}>BPM: {metronomeStore.bpm}</Text>
-      <Slider
-        style={{ width: 250, height: 40 }}
-        minimumValue={40}
-        maximumValue={240}
-        value={metronomeStore.bpm}
-        onValueChange={(value) => metronomeStore.setBpm(Math.round(value))}
-        minimumTrackTintColor="#1FB28A"
-        maximumTrackTintColor="#D3D3D3"
-      />
-
-      <View style={styles.beatDisplay}>
-        {Array.from({ length: metronomeStore.totalBeats }).map((_, idx) => (
-          <View
-            key={idx}
-            style={[
-              styles.dot,
-              idx === metronomeStore.beat ? styles.dotActive : {}
-            ]}
-          />
-        ))}
-      </View>
-      <View style={styles.buttonRow}>
-        {metronomeStore.isRunning ? (
-          <Button title="Stop" onPress={() => metronomeStore.stop()} />
-        ) : (
-          <Button title="Start" onPress={() => metronomeStore.start()} />
-        )}
-      </View>
+      <Text style={styles.title}>Just Breathe</Text>
+      <BreathingAnimation />
+      <Pressable
+        style={[
+          styles.button,
+          { backgroundColor: breathingStore.isRunning ? "#E57373" : "#81C784" }
+        ]}
+        onPress={handlePress}
+      >
+        <Text style={styles.buttonText}>
+          {breathingStore.isRunning ? "Stop" : "Start"}
+        </Text>
+      </Pressable>
     </View>
   );
 });
 
-export default MetronomeScreen;
+export default MainScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f8f8f8"
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#E8F5E9"
   },
-  bpmLabel: {
-    fontSize: 24,
-    marginBottom: 20
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 40,
+    color: "#2E7D32"
   },
-  beatDisplay: {
-    flexDirection: "row",
-    marginVertical: 40,
-    gap: 16
+  button: {
+    marginTop: 40,
+    marginBottom: 60,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    elevation: 2
   },
-  dot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#CCC"
-  },
-  dotActive: {
-    backgroundColor: "#1FB28A"
-  },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 20
-  }
+  buttonText: { fontSize: 20, fontWeight: "600", color: "#FFF" }
 });
